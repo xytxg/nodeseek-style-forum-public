@@ -211,13 +211,13 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        'group/sub-trigger relative flex cursor-default items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-foreground/80 outline-none transition-all duration-150 ease-out data-[inset]:pl-9 hover:bg-white/16 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-0 data-[state=open]:bg-white/18 data-[state=open]:text-foreground dark:hover:bg-slate-950/55',
+        'group relative flex cursor-default items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-foreground/80 outline-none transition-all duration-150 ease-out data-[inset]:pl-9 hover:bg-white/16 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-0 data-[state=open]:bg-white/18 data-[state=open]:text-foreground dark:hover:bg-slate-950/55',
         className,
       )}
       {...props}
     >
       {children}
-      <ChevronRightIcon className="ml-auto size-4 text-foreground/40 transition-colors group-data-[state=open]/sub-trigger:text-foreground" />
+      <ChevronRightIcon className="ml-auto size-4 text-foreground/40 transition-colors group-data-[state=open]:text-foreground" />
     </DropdownMenuPrimitive.SubTrigger>
   )
 }
