@@ -26,7 +26,7 @@ export function AuthDialog({ children, defaultMode = "login" }: AuthDialogProps)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md p-0 border-0">
+      <DialogContent className="relative isolate overflow-hidden gap-0 p-0 sm:max-w-lg">
         {mode === "login" ? (
           <LoginForm onSuccess={handleSuccess} onSwitchToRegister={switchToRegister} />
         ) : (
