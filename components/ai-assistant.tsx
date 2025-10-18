@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Sparkles, MessageSquare, Shield, Lightbulb } from "lucide-react"
 import { AIService } from "@/lib/ai-service"
@@ -15,13 +14,7 @@ interface AIAssistantProps {
   onSuggestionSelect?: (suggestion: string) => void
 }
 
-export function AIAssistant({
-  mode,
-  postTitle = "",
-  postContent = "",
-  topic = "",
-  onSuggestionSelect,
-}: AIAssistantProps) {
+export function AIAssistant({ mode, postTitle = "", postContent = "", topic = "", onSuggestionSelect }: AIAssistantProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [aiResponse, setAiResponse] = useState("")
@@ -93,58 +86,67 @@ export function AIAssistant({
   }
 
   return (
-    <Card className="border-dashed border-2 border-primary/20">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          {getIcon()}
-          {getTitle()}
-          <Badge variant="secondary" className="text-xs">
-            AI
-          </Badge>
-        </CardTitle>
-        <p className="text-xs text-muted-foreground">{getDescription()}</p>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <Button onClick={handleGenerateSuggestions} disabled={isLoading} size="sm" className="w-full">
+    <div className="rounded-[24px] border border-white/60 bg-white/85 p-5 shadow-lg backdrop-blur">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+              {getIcon()}
+            </div>
+            {getTitle()}
+            <Badge variant="secondary" className="rounded-full border border-primary/20 bg-white/80 px-2 text-[10px]">
+              AI
+            </Badge>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">{getDescription()}</p>
+        </div>
+        <Button
+          onClick={handleGenerateSuggestions}
+          disabled={isLoading}
+          size="sm"
+          className="rounded-full px-4"
+        >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+              <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
               AI思考中...
             </>
           ) : (
             <>
-              <Sparkles className="mr-2 h-3 w-3" />
+              <Sparkles className="mr-2 h-3.5 w-3.5" />
               获取AI建议
             </>
           )}
         </Button>
+      </div>
 
-        {aiResponse && (
-          <div className="space-y-2">
-            <div className="text-xs font-medium text-muted-foreground">AI建议：</div>
-            <div className="text-sm bg-muted/50 p-3 rounded-md whitespace-pre-wrap">{aiResponse}</div>
+      {aiResponse && (
+        <div className="mt-5 space-y-2">
+          <div className="text-xs font-medium text-muted-foreground">AI建议：</div>
+          <div className="rounded-2xl border border-primary/10 bg-primary/5 p-4 text-sm leading-6 text-muted-foreground shadow-inner">
+            {aiResponse}
           </div>
-        )}
+        </div>
+      )}
 
-        {suggestions.length > 0 && (
+      {suggestions.length > 0 && (
+        <div className="mt-5 space-y-2">
+          <div className="text-xs font-medium text-muted-foreground">快速选择：</div>
           <div className="space-y-2">
-            <div className="text-xs font-medium text-muted-foreground">快速选择：</div>
-            <div className="space-y-1">
-              {suggestions.map((suggestion, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-left justify-start h-auto p-2 text-xs bg-transparent"
-                  onClick={() => onSuggestionSelect?.(suggestion)}
-                >
-                  <div className="whitespace-normal text-left">{suggestion.replace(/^\d+\.\s*/, "")}</div>
-                </Button>
-              ))}
-            </div>
+            {suggestions.map((suggestion, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                className="w-full justify-start rounded-2xl border-primary/20 bg-white/80 p-3 text-left text-xs text-foreground hover:border-primary/40 hover:bg-primary/10"
+                onClick={() => onSuggestionSelect?.(suggestion)}
+              >
+                {suggestion.replace(/^\d+\.\s*/, "")}
+              </Button>
+            ))}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   )
 }
