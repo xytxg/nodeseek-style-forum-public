@@ -1,22 +1,20 @@
 "use client"
 
 import { useParams } from "next/navigation"
+import Link from "next/link"
 import { ForumHeader } from "@/components/forum-header"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PostCard } from "@/components/post-card"
-import { ArrowLeft, Calendar, Settings } from "lucide-react"
 import { UserLevelBadge } from "@/components/user-level-badge"
 import { DEMO_USER_LEVELS, calculateUserLevel } from "@/lib/user-level"
-import Link from "next/link"
 import { useAuthStore } from "@/lib/auth"
 import { usePostsStore } from "@/lib/posts"
 import { useCommentsStore } from "@/lib/comments"
+import { CalendarDays, MapPin, LinkIcon, MessageSquare, Eye, Sparkles, ArrowLeft } from "lucide-react"
 
-// Mock user data - in a real app this would come from a user store
 const getUserById = (id: string) => {
   const users = [
     {
@@ -61,14 +59,19 @@ export default function UserProfilePage() {
 
   if (!profileUser) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="relative min-h-screen overflow-hidden bg-background">
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(129,140,248,0.18),_transparent_60%)]" />
+          <div className="absolute left-[-15%] top-[20%] h-[320px] w-[320px] rounded-full bg-sky-200/30 blur-3xl" />
+        </div>
         <ForumHeader />
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          <div className="text-center py-12">
-            <h1 className="text-2xl font-bold mb-4">用户不存在</h1>
-            <p className="text-muted-foreground mb-6">您访问的用户可能不存在</p>
-            <Link href="/">
-              <Button>返回首页</Button>
+        <div className="container relative mx-auto flex max-w-3xl flex-col items-center px-4 py-16 text-center">
+          <div className="rounded-[32px] border border-white/60 bg-white/80 p-12 shadow-2xl backdrop-blur-xl">
+            <Sparkles className="mx-auto h-10 w-10 text-primary" />
+            <h1 className="mt-4 text-2xl font-semibold text-foreground">用户不存在</h1>
+            <p className="mt-2 text-sm text-muted-foreground">您访问的用户可能不存在或已离开社区。</p>
+            <Link href="/" className="mt-6 inline-flex">
+              <Button className="rounded-full px-6">返回首页</Button>
             </Link>
           </div>
         </div>
@@ -77,150 +80,157 @@ export default function UserProfilePage() {
   }
 
   const userPosts = posts.filter((post) => post.author.id === userId)
-  const userComments = comments.filter((comment) => comment.author.id === userId)
+  const userCommentsList = comments.filter((comment) => comment.author.id === userId)
   const isOwnProfile = currentUser?.id === userId
 
+  const stats = [
+    { label: "话题", value: profileUser.postCount },
+    { label: "评论", value: profileUser.commentCount },
+    { label: "获赞", value: profileUser.likeCount },
+    { label: "鸡腿", value: userLevel.drumsticks },
+  ]
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(129,140,248,0.18),_transparent_60%)]" />
+        <div className="absolute left-[-15%] top-[18%] h-[360px] w-[360px] rounded-full bg-sky-200/30 blur-3xl" />
+        <div className="absolute right-[-20%] bottom-[-20%] h-[420px] w-[420px] rounded-full bg-purple-200/30 blur-[150px]" />
+      </div>
       <ForumHeader />
 
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <div className="mb-6">
+      <div className="container relative mx-auto max-w-5xl px-4 pb-16 pt-10 lg:pb-24">
+        <div className="mb-8 flex items-center justify-between">
           <Link href="/">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              返回首页
+            <Button
+              variant="outline"
+              size="sm"
+              className="group rounded-full border-primary/20 bg-white/80 px-4 text-primary shadow-sm backdrop-blur-lg transition hover:border-primary/40 hover:text-primary"
+            >
+              <ArrowLeft className="h-4 w-4 transition group-hover:-translate-x-1" />
+              <span className="ml-2 font-medium">返回首页</span>
             </Button>
           </Link>
+          {isOwnProfile && (
+            <Link href="/settings">
+              <Button className="rounded-full px-4">
+                <Sparkles className="mr-2 h-4 w-4" />
+                编辑资料
+              </Button>
+            </Link>
+          )}
         </div>
 
-        <div className="space-y-6">
-          {/* Profile Header */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-start gap-6">
-                <Avatar className="h-24 w-24">
+        <div className="space-y-8">
+          <div className="relative overflow-hidden rounded-[40px] border border-white/60 bg-white/85 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-sky-100/40" />
+              <div className="absolute right-[-12%] top-[-12%] h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+            </div>
+            <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                <Avatar className="h-24 w-24 border-4 border-white/70 shadow-xl">
                   <AvatarImage src={profileUser.avatar || "/placeholder.svg"} alt={profileUser.username} />
-                  <AvatarFallback className="text-2xl">{profileUser.username.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="text-2xl font-semibold">{profileUser.username.charAt(0)}</AvatarFallback>
                 </Avatar>
-
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-2xl font-bold">{profileUser.username}</h1>
-                        <UserLevelBadge userLevel={userLevel} showDrumsticks={true} size="md" />
-                      </div>
-                      <p className="text-muted-foreground mb-3">{profileUser.bio}</p>
-                    </div>
-                    {isOwnProfile && (
-                      <Link href="/settings">
-                        <Button variant="outline">
-                          <Settings className="mr-2 h-4 w-4" />
-                          编辑资料
-                        </Button>
-                      </Link>
-                    )}
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h1 className="text-3xl font-semibold text-foreground">{profileUser.username}</h1>
+                    <UserLevelBadge userLevel={userLevel} showDrumsticks size="md" />
                   </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">{profileUser.postCount}</div>
-                      <div className="text-sm text-muted-foreground">话题</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">{profileUser.commentCount}</div>
-                      <div className="text-sm text-muted-foreground">评论</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">{profileUser.likeCount}</div>
-                      <div className="text-sm text-muted-foreground">获赞</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">{userLevel.drumsticks}</div>
-                      <div className="text-sm text-muted-foreground">鸡腿 🍗</div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>加入于 {profileUser.joinDate}</span>
-                    </div>
+                  <p className="text-sm text-muted-foreground max-w-xl">{profileUser.bio}</p>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <CalendarDays className="h-4 w-4 text-primary" /> 加入于 {profileUser.joinDate}
+                    </span>
                     {profileUser.location && (
-                      <div className="flex items-center gap-1">
-                        <span>📍 {profileUser.location}</span>
-                      </div>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4 text-primary" /> {profileUser.location}
+                      </span>
                     )}
                     {profileUser.website && (
-                      <div className="flex items-center gap-1">
-                        <span>🔗</span>
-                        <a
-                          href={profileUser.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          {profileUser.website}
-                        </a>
-                      </div>
+                      <a
+                        href={profileUser.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-primary hover:underline"
+                      >
+                        <LinkIcon className="h-4 w-4" />
+                        {profileUser.website}
+                      </a>
                     )}
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-4">
+                {stats.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="rounded-2xl border border-white/60 bg-white/70 p-4 shadow-inner backdrop-blur"
+                  >
+                    <div className="text-2xl font-semibold text-foreground">{stat.value}</div>
+                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-          {/* Activity Tabs */}
-          <Tabs defaultValue="posts" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="posts">话题 ({userPosts.length})</TabsTrigger>
-              <TabsTrigger value="comments">评论 ({userComments.length})</TabsTrigger>
+          <Tabs defaultValue="posts" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2 gap-2 rounded-full border border-white/60 bg-white/70 p-1 backdrop-blur">
+              <TabsTrigger
+                value="posts"
+                className="rounded-full border border-transparent text-sm font-medium text-muted-foreground transition data-[state=active]:border-primary/40 data-[state=active]:bg-white data-[state=active]:text-primary"
+              >
+                话题 ({userPosts.length})
+              </TabsTrigger>
+              <TabsTrigger
+                value="comments"
+                className="rounded-full border border-transparent text-sm font-medium text-muted-foreground transition data-[state=active]:border-primary/40 data-[state=active]:bg-white data-[state=active]:text-primary"
+              >
+                评论 ({userCommentsList.length})
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="posts" className="space-y-4">
               {userPosts.length > 0 ? (
-                userPosts.map((post) => <PostCard key={post.id} {...post} />)
+                userPosts.map((post) => (
+                  <div
+                    key={post.id}
+                    className="rounded-[28px] border border-white/60 bg-white/85 p-4 shadow-lg backdrop-blur transition hover:-translate-y-1 hover:border-primary/40"
+                  >
+                    <PostCard {...post} />
+                  </div>
+                ))
               ) : (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <p className="text-muted-foreground">还没有发布任何话题</p>
-                  </CardContent>
-                </Card>
+                <div className="rounded-[28px] border border-dashed border-primary/30 bg-primary/5 p-10 text-center text-sm text-muted-foreground">
+                  还没有发布任何话题，开始分享你的想法吧。
+                </div>
               )}
             </TabsContent>
 
             <TabsContent value="comments" className="space-y-4">
-              {userComments.length > 0 ? (
-                userComments.map((comment) => (
-                  <Card key={comment.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={comment.author.avatar || "/placeholder.svg"} alt={comment.author.name} />
-                          <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-sm">{comment.author.name}</span>
-                            <UserLevelBadge userLevel={DEMO_USER_LEVELS[comment.author.id] || calculateUserLevel(90)} />
-                            <span className="text-xs text-muted-foreground">{comment.createdAt}</span>
-                            <Badge variant="outline" className="text-xs">
-                              评论
-                            </Badge>
-                          </div>
-                          <p className="text-sm leading-relaxed">{comment.content}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+              {userCommentsList.length > 0 ? (
+                userCommentsList.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="rounded-[28px] border border-white/60 bg-white/85 p-6 shadow-lg backdrop-blur"
+                  >
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <MessageSquare className="h-4 w-4 text-primary" /> {comment.createdAt}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Eye className="h-4 w-4 text-primary" /> 互动 {comment.likes}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">{comment.content}</p>
+                  </div>
                 ))
               ) : (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <p className="text-muted-foreground">还没有发表任何评论</p>
-                  </CardContent>
-                </Card>
+                <div className="rounded-[28px] border border-dashed border-primary/30 bg-primary/5 p-10 text-center text-sm text-muted-foreground">
+                  还没有发表任何评论，积极参与讨论会提升曝光度。
+                </div>
               )}
             </TabsContent>
           </Tabs>

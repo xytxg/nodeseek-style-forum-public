@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent } from "@/components/ui/card"
 import { Icons } from "@/components/icons"
 import { UserLevelBadge } from "@/components/user-level-badge"
 import { DEMO_USER_LEVELS, calculateUserLevel } from "@/lib/user-level"
@@ -17,7 +16,7 @@ interface CommentItemProps {
   onReply?: () => void
 }
 
-export function CommentItem({ comment, onReply }: CommentItemProps) {
+export function CommentItem({ comment }: CommentItemProps) {
   const [isReplying, setIsReplying] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [replyContent, setReplyContent] = useState("")
@@ -112,117 +111,123 @@ export function CommentItem({ comment, onReply }: CommentItemProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <Avatar className="h-8 w-8 flex-shrink-0">
-              <AvatarImage src={comment.author.avatar || "/placeholder.svg"} alt={comment.author.name} />
-              <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
-            </Avatar>
+    <div className="space-y-4">
+      <div className="rounded-[22px] border border-white/60 bg-white/85 p-5 shadow-lg backdrop-blur transition hover:-translate-y-0.5">
+        <div className="flex items-start gap-4">
+          <Avatar className="h-10 w-10 border-2 border-white/70 shadow-sm">
+            <AvatarImage src={comment.author.avatar || "/placeholder.svg"} alt={comment.author.name} />
+            <AvatarFallback className="font-medium">{comment.author.name.charAt(0)}</AvatarFallback>
+          </Avatar>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-medium text-sm">{comment.author.name}</span>
-                <UserLevelBadge userLevel={commentAuthorLevel} />
-                <span className="text-xs text-muted-foreground">{comment.createdAt}</span>
-                {comment.updatedAt !== comment.createdAt && (
-                  <span className="text-xs text-muted-foreground">(已编辑)</span>
-                )}
-              </div>
-
-              {isEditing ? (
-                <div className="space-y-3">
-                  <Textarea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    placeholder="编辑评论..."
-                    className="min-h-[80px] resize-none"
-                  />
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={handleEdit}>
-                      <Icons.Send />
-                      <span className="ml-2">保存</span>
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
-                      取消
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">{comment.content}</p>
-
-                  <div className="flex items-center gap-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleLike}
-                      className={`h-7 px-2 ${isLiked ? "text-red-500" : ""}`}
-                    >
-                      <Icons.Heart className={`mr-1 h-3 w-3 ${isLiked ? "fill-current" : ""}`} />
-                      {comment.likes > 0 && comment.likes}
-                    </Button>
-
-                    <Button variant="ghost" size="sm" onClick={() => setIsReplying(!isReplying)} className="h-7 px-2">
-                      <Icons.MessageCircle />
-                      <span className="ml-1">回复</span>
-                    </Button>
-
-                    {isAuthor && (
-                      <>
-                        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="h-7 px-2">
-                          <Icons.Edit />
-                          <span className="ml-1">编辑</span>
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleDelete}
-                          className="h-7 px-2 text-destructive hover:text-destructive"
-                        >
-                          <Icons.Trash2 />
-                          <span className="ml-1">删除</span>
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
+          <div className="flex-1 min-w-0 space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="font-medium text-foreground">{comment.author.name}</span>
+              <UserLevelBadge userLevel={commentAuthorLevel} />
+              <span className="text-xs text-muted-foreground">{comment.createdAt}</span>
+              {comment.updatedAt !== comment.createdAt && <span className="text-xs text-muted-foreground">(已编辑)</span>}
             </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Reply Form */}
-      {isReplying && (
-        <div className="ml-11">
-          <Card>
-            <CardContent className="p-4">
+            {isEditing ? (
               <div className="space-y-3">
                 <Textarea
-                  value={replyContent}
-                  onChange={(e) => setReplyContent(e.target.value)}
-                  placeholder="写下您的回复..."
-                  className="min-h-[80px] resize-none"
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  placeholder="编辑评论..."
+                  className="min-h-[100px] resize-none border-white/60 bg-white/80 text-base leading-7 text-foreground shadow-inner backdrop-blur focus-visible:border-primary/40"
                 />
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={handleReply}>
-                    <Icons.Send />
-                    <span className="ml-2">回复</span>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" onClick={handleEdit} className="rounded-full px-4">
+                    <Icons.Send className="h-4 w-4" />
+                    <span className="ml-1.5">保存</span>
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setIsReplying(false)}>
+                  <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} className="rounded-full px-4">
                     取消
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              <>
+                <p className="whitespace-pre-wrap break-words text-sm leading-7 text-muted-foreground">{comment.content}</p>
+
+                <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLike}
+                    className={`h-7 rounded-full px-3 transition ${isLiked ? "text-red-500" : "text-muted-foreground"}`}
+                  >
+                    <Icons.Heart className={`mr-1 h-3.5 w-3.5 ${isLiked ? "fill-current" : ""}`} />
+                    {comment.likes > 0 && comment.likes}
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsReplying(!isReplying)}
+                    className="h-7 rounded-full px-3"
+                  >
+                    <Icons.MessageCircle className="mr-1 h-3.5 w-3.5" />
+                    回复
+                  </Button>
+
+                  {isAuthor && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditing(true)}
+                        className="h-7 rounded-full px-3"
+                      >
+                        <Icons.Edit className="mr-1 h-3.5 w-3.5" />
+                        编辑
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleDelete}
+                        className="h-7 rounded-full px-3 text-destructive hover:text-destructive"
+                      >
+                        <Icons.Trash2 className="mr-1 h-3.5 w-3.5" />
+                        删除
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {isReplying && (
+        <div className="ml-11">
+          <div className="rounded-[20px] border border-white/60 bg-white/80 p-4 shadow-inner backdrop-blur">
+            <div className="space-y-3">
+              <Textarea
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder="写下您的回复..."
+                className="min-h-[100px] resize-none border-white/60 bg-white/80 text-base leading-7 text-foreground shadow-inner backdrop-blur focus-visible:border-primary/40"
+              />
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" onClick={handleReply} className="rounded-full px-4">
+                  <Icons.Send className="h-4 w-4" />
+                  <span className="ml-1.5">回复</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsReplying(false)}
+                  className="rounded-full px-4"
+                >
+                  取消
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Replies */}
       {replies.length > 0 && (
         <div className="ml-11 space-y-3">
           {replies.map((reply) => (
